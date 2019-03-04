@@ -3,7 +3,7 @@ var chrome = require("selenium-webdriver/chrome");
 var chromeDriverPath = require("chromedriver").path;
 var { setWorldConstructor } = require("cucumber");
 // constants
-var USER_LOGIN = "ecse428-4@protonmail.com";
+var USER_LOGIN = "ecse428@protonmail.com";
 var USER_PASSWORD = "test123456";
 
 ("use strict");
@@ -11,6 +11,7 @@ var USER_PASSWORD = "test123456";
 chrome.setDefaultService(new chrome.ServiceBuilder(chromeDriverPath).build());
 
 class SeliniumActions {
+  /** Initialize Chrome web driver */
   constructor() {
     this.driver = new webdriver.Builder()
       .withCapabilities(webdriver.Capabilities.chrome())
@@ -22,6 +23,9 @@ class SeliniumActions {
       .implicitlyWait(20000);
   }
 
+  /**
+   * Login to ProtonMail web client to see inbox
+   */
   async loginProtonMail() {
     this.driver.get("https://mail.protonmail.com/login");
 
@@ -47,6 +51,9 @@ class SeliniumActions {
     return renderConfirmation.getSize() !== 0;
   }
 
+  /**
+   * Open ProtonMail's modal to compose a new message
+   */
   async openNewMessageModal() {
     await this.driver
       .findElement(
@@ -61,7 +68,15 @@ class SeliniumActions {
     return renderConfirmation.getSize() !== 0;
   }
 
+  /**
+   * Add the address of the recipient in the "to" field of the email's form
+   * @param {string} email
+   */
   async addRecipient(email) {
+    if (!email) {
+      return false;
+    }
+
     await this.driver
       .findElement(
         webdriver.By.className("autocompleteEmails-input no-outline")
@@ -77,7 +92,15 @@ class SeliniumActions {
     return email === renderConfirmation;
   }
 
+  /**
+   * Attach an image to the email by using the "insert picture" option provided by ProtonMail
+   * @param {string} url
+   */
   async addImageUrl(url) {
+    if (!url) {
+      return false;
+    }
+
     await this.driver
       .findElement(webdriver.By.className("squireToolbar-action-image image"))
       .click();
@@ -109,7 +132,15 @@ class SeliniumActions {
     return renderConfirmation.getSize() !== 0;
   }
 
+  /**
+   * Attach an image to the email by using the file uploader provided by ProtonMail
+   * @param {string} file
+   */
   async addImageAttachment(file) {
+    if (!file) {
+      return false;
+    }
+
     await this.driver
       .findElement(webdriver.By.className("dz-hidden-input"))
       .sendKeys(`${__dirname}/data/${file}`);
@@ -139,7 +170,15 @@ class SeliniumActions {
     return renderConfirmation.getSize() !== 0;
   }
 
+  /**
+   * Add a subject to the email form inside of the "Subject" field
+   * @param {string} subject
+   */
   async addSubject(subject) {
+    if (!subject) {
+      return false;
+    }
+
     await this.driver
       .findElement(
         webdriver.By.className(
@@ -155,6 +194,9 @@ class SeliniumActions {
     return subject === renderConfirmation;
   }
 
+  /**
+   * Press "SEND" button to send an email to the desired recipient
+   */
   async attemptToSendEmail() {
     await this.driver
       .findElement(
@@ -165,7 +207,11 @@ class SeliniumActions {
       .click();
   }
 
-  async semdCorrectEmail() {
+  /**
+   * Send an email assuming that there are no errors in any of the fields and the
+   * email has valid content
+   */
+  async sendCorrectEmail() {
     await this.attemptToSendEmail();
 
     await this.driver.wait(
@@ -184,7 +230,15 @@ class SeliniumActions {
     return renderConfirmation.getSize() !== 0;
   }
 
+  /**
+   * Opens up the first email in the list of "Sent" emails which corresponds to a given subject
+   * @param {string} subject
+   */
   async openEmailWithSubject(subject) {
+    if (!subject) {
+      return false;
+    }
+
     await this.driver.get("https://mail.protonmail.com/sent");
 
     await this.driver.wait(
@@ -202,7 +256,17 @@ class SeliniumActions {
       .then(el => el.click());
   }
 
+  /**
+   * Check that the contents of the email match what was sent through ProtonMail's compose email modal with a given image URL
+   * @param {string} address
+   * @param {string} imageUrl
+   * @param {string} subject
+   */
   async confirmEmailSentByImageUrl(address, imageUrl, subject) {
+    if (!address || !imageUrl || !subject) {
+      return false;
+    }
+
     await this.openEmailWithSubject(subject);
 
     await this.driver
@@ -224,10 +288,20 @@ class SeliniumActions {
     ]).then(values => values.map(el => el.getSize() !== 0).every(el => true));
   }
 
+  /**
+   * Check that the contents of the email match what was sent through ProtonMail's compose email modal with a given attached image from disk
+   * @param {string} address
+   * @param {string} filename
+   * @param {string} subject
+   */
   async confirmEmailSentByImageFromDisk(address, filename, subject) {
+    if (!address || !filename || !subject) {
+      return false;
+    }
+
     await this.openEmailWithSubject(subject);
 
-    return Promise.all([
+    return await Promise.all([
       this.driver.findElement(
         webdriver.By.xpath(`//*[contains(text(), '${filename}')]`)
       ),
@@ -237,6 +311,10 @@ class SeliniumActions {
     ]).then(values => values.map(el => el.getSize() !== 0).every(el => true));
   }
 
+  /**
+   * Send an email knowing that the email is badly formatted
+   * @param {string} address
+   */
   async sendEmailWithWrongAddress(address) {
     await this.attemptToSendEmail();
 
@@ -251,18 +329,25 @@ class SeliniumActions {
 
     const renderConfirmation = await this.driver.findElement(
       webdriver.By.xpath(
-        `//*[contains(text(), 'The following addresses are not valid: ${address}')]`
+        `//*[contains(text(), 'The following addresses are not valid: ${address.toLowerCase()}')]`
       )
     );
 
     return renderConfirmation.getSize() !== 0;
   }
 
+  /**
+   * Go back to the initial "Given" state for when the user is not in the inbox but is logged in
+   */
   async restoreInitial() {
-    await this.driver.get("https://mail.protonmail.com/sent");
-    return this.openNewMessageModal();
+    await this.driver.get("https://mail.protonmail.com/inbox");
+    return await this.openNewMessageModal();
   }
 
+  /**
+   * Go back to the initial "Given" state for when the user still has the "Compose" modal open but was not allowed
+   * to send an email because of an error
+   */
   async restoreInitialFromError() {
     await this.driver
       .wait(
@@ -284,6 +369,9 @@ class SeliniumActions {
     return !renderConfirmation;
   }
 
+  /**
+   * Quit Chrome
+   */
   async quitDriver() {
     await this.driver.quit();
   }

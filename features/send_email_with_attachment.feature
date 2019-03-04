@@ -30,7 +30,7 @@ Feature: Sending Email with Image Attachment
 
         Examples:
             | address                        | subject                           | filename                    |
-            | ecse428@protonmail.com         | Gif Picture                       | image_animated.gif          |
+            | ecse428@protonmail.com         | Animated Gif Picture              | image_animated.gif          |
             | ecse428-1@protonmail.com       | Very large picture in .jpg        | image_large.jpg             |
             | ecse428-2@protonmail.com       | Picture with Regular Logo in .png | image_regular_logo.png      |
             | test4@bla.com                  | Small Transparent Picture         | image_small_transparent.png |
