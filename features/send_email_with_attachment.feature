@@ -29,12 +29,12 @@ Feature: Sending Email with Image Attachment
         Then the email should appear as a sent email with address "<address>", image from disk "<filename>" and subject "<subject>"
 
         Examples:
-            | address                        | subject                           | filename                    |
-            | ecse428@protonmail.com         | Animated Gif Picture              | image_animated.gif          |
-            | ecse428-1@protonmail.com       | Very large picture in .jpg        | image_large.jpg             |
-            | ecse428-2@protonmail.com       | Picture with Regular Logo in .png | image_regular_logo.png      |
-            | test4@bla.com                  | Small Transparent Picture         | image_small_transparent.png |
-            | camilo.e.garcia@mail.mcgill.ca | Image White Background            | image_white_background.jpg  |
+            | address                  | subject                           | filename                    |
+            | ecse428@protonmail.com   | Animated Gif Picture              | image_animated.gif          |
+            | ecse428-1@protonmail.com | Very large picture in .jpg        | image_large.jpg             |
+            | ecse428-2@protonmail.com | Picture with Regular Logo in .png | image_regular_logo.png      |
+            | test4@bro.gg             | Small Transparent Picture         | image_small_transparent.png |
+            | ecse428-3@protonmail.com | Image White Background            | image_white_background.jpg  |
 
     Scenario Outline: Send email to invalid address with file image attachment
         Given that I am a valid user logged in on my ProtonMail inbox page

@@ -3,7 +3,7 @@ var chrome = require("selenium-webdriver/chrome");
 var chromeDriverPath = require("chromedriver").path;
 var { setWorldConstructor } = require("cucumber");
 // constants
-var USER_LOGIN = "ecse428@protonmail.com";
+var USER_LOGIN = "ecse428-6@protonmail.com";
 var USER_PASSWORD = "test123456";
 
 ("use strict");
@@ -278,14 +278,11 @@ class SeliniumActions {
       )
       .then(el => el.click());
 
-    return Promise.all([
-      this.driver.findElement(
-        webdriver.By.xpath(`//*[contains(text(), '${address}')]`)
-      ),
-      this.driver.findElement(
-        webdriver.By.xpath(`//img[contains(@src,'${imageUrl}')]`)
-      )
-    ]).then(values => values.map(el => el.getSize() !== 0).every(el => true));
+    const renderConfirmation = await this.driver.findElement(
+      webdriver.By.xpath(`//img[contains(@src,'${imageUrl}')]`)
+    );
+
+    return renderConfirmation.getSize() !== 0;
   }
 
   /**
@@ -301,14 +298,11 @@ class SeliniumActions {
 
     await this.openEmailWithSubject(subject);
 
-    return await Promise.all([
-      this.driver.findElement(
-        webdriver.By.xpath(`//*[contains(text(), '${filename}')]`)
-      ),
-      this.driver.findElement(
-        webdriver.By.xpath(`//*[contains(text(), '${address}')]`)
-      )
-    ]).then(values => values.map(el => el.getSize() !== 0).every(el => true));
+    const renderConfirmation = await this.driver.findElement(
+      webdriver.By.xpath(`//*[contains(text(), '${filename}')]`)
+    );
+
+    return renderConfirmation.getSize() !== 0;
   }
 
   /**
@@ -341,7 +335,7 @@ class SeliniumActions {
    */
   async restoreInitial() {
     await this.driver.get("https://mail.protonmail.com/inbox");
-    return await this.openNewMessageModal();
+    return this.openNewMessageModal();
   }
 
   /**
