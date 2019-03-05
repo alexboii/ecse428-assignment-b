@@ -8,6 +8,10 @@ Given(
   async function() {
     expect(await this.loginProtonMail(), true);
     expect(await this.openNewMessageModal(), true);
+
+    // we make sure EXPLICITLY DUE TO ASSIGNMENT REQUIREMENTS that the page is at an initial state
+    // even though we confirm the expected state at the end of each action method
+    expect(await this.confirmInitialState(), true);
   }
 );
 
@@ -38,6 +42,9 @@ Then(
     );
 
     expect(await this.restoreInitial(), true);
+    // we make sure EXPLICITLY DUE TO ASSIGNMENT REQUIREMENTS that the page is at an initial state
+    // even though we confirm the expected state at the end of each action method
+    expect(await this.confirmInitialState(), true);
   }
 );
 
@@ -52,6 +59,9 @@ Then(
     );
 
     expect(await this.restoreInitial(), true);
+    // we make sure EXPLICITLY DUE TO ASSIGNMENT REQUIREMENTS that the page is at an initial state
+    // even though we confirm the expected state at the end of each action method
+    expect(await this.confirmInitialState(), true);
   }
 );
 
@@ -61,5 +71,8 @@ Then(
     expect(await this.sendEmailWithWrongAddress(address), true);
 
     expect(await this.restoreInitialFromError(), true);
+    // we make sure EXPLICITLY DUE TO ASSIGNMENT REQUIREMENTS that the page is at an initial state
+    // even though we confirm the expected state at the end of each action method
+    expect(await this.confirmInitialState(), true);
   }
 );

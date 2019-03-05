@@ -363,6 +363,23 @@ class SeliniumActions {
     return !renderConfirmation;
   }
 
+  /** Method to confirm that we are indeed at the expected initial state */
+  async confirmInitialState() {
+    const renderInboxConfirmation = (await this.driver.findElement(
+      webdriver.By.className("navigationItem-title")
+    )).getCssValue("font-weight");
+
+    if (renderInboxConfirmation < 700) {
+      return false;
+    }
+
+    const renderMessageModalConfirmation = await this.driver.findElement(
+      webdriver.By.xpath(`//*[contains(text(), 'New message')]`)
+    );
+
+    return renderMessageModalConfirmation.getSize() !== 0;
+  }
+
   /**
    * Quit Chrome
    */
