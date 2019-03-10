@@ -3,8 +3,8 @@ var chrome = require("selenium-webdriver/chrome");
 var chromeDriverPath = require("chromedriver").path;
 var { setWorldConstructor } = require("cucumber");
 // constants
-var USER_LOGIN = "ecse428-6@protonmail.com";
-var USER_PASSWORD = "test123456";
+var USER_LOGIN = "ecse428-15@protonmail.com";
+var USER_PASSWORD = "pastasaucemakesmefeelwhole";
 
 ("use strict");
 
@@ -48,7 +48,7 @@ class SeliniumActions {
       webdriver.By.id("ptSidebar")
     );
 
-    return renderConfirmation.getSize() !== 0;
+    return (await renderConfirmation.getSize()) !== 0;
   }
 
   /**
@@ -65,7 +65,7 @@ class SeliniumActions {
       webdriver.By.id("uid1")
     );
 
-    return renderConfirmation.getSize() !== 0;
+    return (await renderConfirmation.getSize()) !== 0;
   }
 
   /**
@@ -129,7 +129,7 @@ class SeliniumActions {
       webdriver.By.tagName("img")
     );
 
-    return renderConfirmation.getSize() !== 0;
+    return (await renderConfirmation.getSize()) !== 0;
   }
 
   /**
@@ -167,7 +167,7 @@ class SeliniumActions {
       webdriver.By.xpath("//*[contains(text(), 'file attached')]")
     );
 
-    return renderConfirmation.getSize() !== 0;
+    return (await renderConfirmation.getSize()) !== 0;
   }
 
   /**
@@ -227,7 +227,7 @@ class SeliniumActions {
       webdriver.By.xpath("//*[contains(text(), 'Message sent')]")
     );
 
-    return renderConfirmation.getSize() !== 0;
+    return (await renderConfirmation.getSize()) !== 0;
   }
 
   /**
@@ -282,7 +282,7 @@ class SeliniumActions {
       webdriver.By.xpath(`//img[contains(@src,'${imageUrl}')]`)
     );
 
-    return renderConfirmation.getSize() !== 0;
+    return (await renderConfirmation.getSize()) !== 0;
   }
 
   /**
@@ -298,11 +298,11 @@ class SeliniumActions {
 
     await this.openEmailWithSubject(subject);
 
-    const renderConfirmation = await this.driver.findElement(
+    const renderConfirmation = await (await this.driver.findElement(
       webdriver.By.xpath(`//*[contains(text(), '${filename}')]`)
-    );
+    )).getSize();
 
-    return renderConfirmation.getSize() !== 0;
+    return renderConfirmation !== 0;
   }
 
   /**
@@ -327,7 +327,7 @@ class SeliniumActions {
       )
     );
 
-    return renderConfirmation.getSize() !== 0;
+    return (await renderConfirmation.getSize()) !== 0;
   }
 
   /**
@@ -352,9 +352,17 @@ class SeliniumActions {
       )
       .then(el => el.click());
 
-    await this.driver
-      .findElement(webdriver.By.xpath('//*[@title="Subject"]'))
-      .clear();
+    await (await this.driver.findElement(
+      webdriver.By.xpath('//*[@title="Subject"]')
+    )).clear();
+
+    await (await this.driver.findElement(
+      webdriver.By.className("composerAttachments-header")
+    )).click();
+
+    await (await this.driver.findElement(
+      webdriver.By.className("progressLoader-btn-remove progressionBtn-btn")
+    )).click();
 
     const renderConfirmation = await this.driver
       .findElement(webdriver.By.xpath('//*[@title="Subject"]'))
@@ -377,7 +385,7 @@ class SeliniumActions {
       webdriver.By.xpath(`//*[contains(text(), 'New message')]`)
     );
 
-    return renderMessageModalConfirmation.getSize() !== 0;
+    return (await renderMessageModalConfirmation.getSize()) !== 0;
   }
 
   /**
